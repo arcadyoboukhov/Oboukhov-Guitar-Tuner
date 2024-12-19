@@ -548,6 +548,7 @@ fun TunerScreen(
     val showMenu1 = remember { mutableStateOf(false) }
     val context = LocalContext.current
     var hasMicrophonePermission by remember { mutableStateOf(checkMicrophonePermission(context)) }
+    val currentPitchAngle = remember { mutableStateOf(0f) }
 
 
 
@@ -590,7 +591,16 @@ fun TunerScreen(
             startPitchDetection()
         }
     }
+    LaunchedEffect(pitchState.value) {
+        delay(100) // Introduce a delay of 500 milliseconds
 
+        val note = getCurrentNote()
+        val correctFloat = getPitchForNote(note) // Get the pitch as a Float
+        val correct = correctFloat.toInt() // Convert Float to Int
+
+        // Calculate the angle difference based on the current pitch and correct pitch
+        currentPitchAngle.value = calculatePitchAngle(pitchState.value, correct)
+    }
     // Requesting permission if not already granted
     LaunchedEffect(Unit) {
         if (!hasMicrophonePermission) {
@@ -760,7 +770,7 @@ fun TunerScreen(
                     )
                 }
 
-                TunerDial(currentPitchAngle = 30f, targetPitchAngle = 0f)
+                TunerDial(currentPitchAngle = currentPitchAngle.value, targetPitchAngle = 0f)
 
 
                 Text(
@@ -771,6 +781,29 @@ fun TunerScreen(
                     color = Color(0xFF6200EE),
                     modifier = Modifier.weight(1f) // Optional: Makes the texts share space equally
                 )
+
+
+
+
+
+
+// Optionally display the angle
+                Text(
+                    text = "Angle Difference: ${currentPitchAngle.value}°", // Correctly access the value
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF6200EE),
+                    modifier = Modifier.weight(1f) // Optional: Makes the texts share space equally
+                )
+
+
+
+
+
+
+
+
+
                 // Only display note control buttons when menu is closed
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -821,25 +854,46 @@ fun TunerScreen(
         }
     }
 }
+fun calculatePitchAngle(currentPitch: Int, correctPitch: Int): Float {
+    // Log the input values
+    println("Input - currentPitch: $currentPitch, correctPitch: $correctPitch")
 
+    val result = when {
+        currentPitch == correctPitch -> {
+            90f // Perfect match
+        }
+        currentPitch < correctPitch -> {
+            val percentage = (currentPitch.toFloat() / correctPitch) // Calculate percentage as a fraction
+            println("percent: $percentage")
 
+            90 * percentage // Scale to the range of 0 to 90
+        }
+        else -> {
+            val percentage = (currentPitch.toFloat() / correctPitch) // Calculate percentage as a fraction
+            println("percent: $percentage")
+            90 * percentage // Scale to the range of 0 to 90
+        }
+    }.coerceIn(0f, 180f) // Clamp the value between 0 and 90
 
+    // Log the output value
+    println("Output - calculated pitch angle: $result")
 
-private fun calculatePitchAngle(pitch: Float): Float {
-    return when {
-        pitch < 100 -> -90f // If pitch is too low
-        pitch > 1000 -> 90f // If pitch is too high
-        else -> (pitch - 440) / 440 * 90 // Map to -90 to 90 degrees
-    }
+    return result
 }
+
+
 
 
 @Composable
 fun TunerDial(
     modifier: Modifier = Modifier,
-    currentPitchAngle: Float = 0f, // Angle for the current pitch (-90 to 90)
-    targetPitchAngle: Float = 0f   // Angle for the correct pitch (-90 to 90)
+    currentPitchAngle: Float = 0f, // Angle for the current pitch (0 to 180)
+    targetPitchAngle: Float = 0f    // Angle for the correct pitch (0 to 180)
 ) {
+    // Round angles to the nearest integer and ensure they're within the valid range [0, 180]
+    val roundedCurrentPitchAngle = currentPitchAngle.roundToInt().coerceIn(0, 180)
+    val roundedTargetPitchAngle = targetPitchAngle.roundToInt().coerceIn(0, 180)
+
     Box(
         modifier = modifier.size(400.dp), // Adjust the size
         contentAlignment = Alignment.Center
@@ -848,17 +902,16 @@ fun TunerDial(
         Canvas(modifier = Modifier.fillMaxSize()) {
             val arcThickness = 4.dp.toPx() // Thickness of the arc stroke
             val centerX = size.width / 2
-            val centerY = size.height / 2// Center is at the bottom middle of the half-circle
+            val centerY = size.height / 2 // Center is at the bottom middle of the half-circle
 
             // Set the radius to ensure the half-circle matches the height of the vertical lines
             val radius = size.width / 2 // Radius to match the width for a perfect half-circle
 
-            // Function to convert angle to radians in the half-circle context (180° to 0°)
-            fun angleToRadians(angle: Float): Double {
-                // Map -90° to 90° angles to 180° (left) to 0° (right)
-                return Math.toRadians(180 - angle.toDouble())
+            // Function to convert angle to radians
+            fun angleToRadians(angle: Int): Double {
+                // Map 0° to 180° angles to π (left) to 0 (right)
+                return Math.toRadians((180 - angle).toDouble())
             }
-
             // Draw half-circle dial background
             drawArc(
                 color = Color.Gray.copy(alpha = 0.3f),
@@ -869,25 +922,31 @@ fun TunerDial(
                 size = Size(size.width, size.width) // Use width for a perfect half-circle
             )
 
-            // Define the color for the lines
-            val lineColor = Color(0xFF6200EE) // Purple color used for the button
+            // Define colors for the lines
+            val currentLineColor = Color(0xFF6200EE) // Purple color for the current pitch line
+            val targetLineColor = Color.Red // Red color for the target pitch line
 
             // Draw the target pitch line (always vertical at center)
+            val targetX = centerX // Vertical line means X-coordinate is constant
+            val targetYStart = centerY - radius // Starting point of the line
+            val targetYEnd = centerY // Ending point of the line (center bottom)
+
             drawLine(
-                color = lineColor,
+                color = targetLineColor,
                 strokeWidth = 4.dp.toPx(),
-                start = Offset(centerX, centerY - radius), // Top of the dial
-                end = Offset(centerX, centerY) // Bottom of the dial
+                start = Offset(targetX, targetYStart), // Start from the top of the dial
+                end = Offset(targetX, targetYEnd) // End at the bottom center of the dial
             )
 
-            // Calculate position for current pitch (rotating line)
-            val currentAngleRadians = angleToRadians(currentPitchAngle)
+            // Calculate position for current pitch (clamping below horizontal line)
+            val clampedCurrentPitchAngle = roundedCurrentPitchAngle.coerceIn(0, 180)
+            val currentAngleRadians = angleToRadians(clampedCurrentPitchAngle)
             val currentX = centerX + radius * cos(currentAngleRadians).toFloat()
             val currentY = centerY - radius * sin(currentAngleRadians).toFloat()
 
             // Draw the current pitch line (rotating line)
             drawLine(
-                color = lineColor.copy(alpha = 0.8f), // Slightly more transparent
+                color = currentLineColor.copy(alpha = 0.8f), // Slightly more transparent
                 strokeWidth = 4.dp.toPx(),
                 start = Offset(centerX, centerY), // Bottom of the dial
                 end = Offset(currentX, currentY) // Current pitch position
@@ -895,7 +954,6 @@ fun TunerDial(
         }
     }
 }
-
 
 
 @Composable
