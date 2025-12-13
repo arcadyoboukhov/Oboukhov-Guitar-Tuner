@@ -14,6 +14,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -37,6 +38,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+
     }
 
     buildFeatures {
@@ -63,6 +65,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation ("androidx.compose.material:material-icons-extended:1.6.0")
     implementation ("com.squareup.moshi:moshi:1.12.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.12.0")
     implementation ("com.google.code.gson:gson:2.8.8")

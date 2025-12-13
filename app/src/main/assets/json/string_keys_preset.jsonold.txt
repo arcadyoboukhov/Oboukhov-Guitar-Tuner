@@ -1,0 +1,502 @@
+{
+  "strings": {
+    "violin": {
+      "strings": [
+        {"string": "G", "note": "G3"},
+        {"string": "D", "note": "D4"},
+        {"string": "A", "note": "A4"},
+        {"string": "E", "note": "E5"}
+      ]
+    },
+    "viola": {
+      "strings": [
+        {"string": "C", "note": "C3"},
+        {"string": "G", "note": "G3"},
+        {"string": "D", "note": "D4"},
+        {"string": "A", "note": "A4"}
+      ]
+    },
+    "cello": {
+      "strings": [
+        {"string": "C", "note": "C2"},
+        {"string": "G", "note": "G2"},
+        {"string": "D", "note": "D3"},
+        {"string": "A", "note": "A3"}
+      ]
+    },
+    "double_bass": {
+      "strings": [
+        {"string": "E", "note": "E1"},
+        {"string": "A", "note": "A1"},
+        {"string": "D", "note": "D2"},
+        {"string": "G", "note": "G2"}
+      ]
+    },
+    "harp": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "guitar": {
+      "strings": [
+        {"string": "E", "note": "E2"},
+        {"string": "A", "note": "A2"},
+        {"string": "D", "note": "D3"},
+        {"string": "G", "note": "G3"},
+        {"string": "B", "note": "B3"},
+        {"string": "E", "note": "E4"}
+      ]
+    },
+    "ukulele": {
+      "strings": [
+        {"string": "G", "note": "G4"},
+        {"string": "C", "note": "C4"},
+        {"string": "E", "note": "E4"},
+        {"string": "A", "note": "A4"}
+      ]
+    },
+    "mandolin": {
+      "strings": [
+        {"string": "G", "note": "G3"},
+        {"string": "D", "note": "D4"},
+        {"string": "A", "note": "A4"},
+        {"string": "E", "note": "E5"}
+      ]
+    },
+    "banjo": {
+      "strings": [
+        {"string": "D", "note": "D3"},
+        {"string": "B", "note": "B3"},
+        {"string": "G", "note": "G4"},
+        {"string": "D", "note": "D4"},
+        {"string": "G", "note": "G4"}
+      ]
+    },
+    "zither": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "lyre": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "oud, sitar, charango": {
+      "strings": [
+        {"string": "C", "note": "C3"},
+        {"string": "G", "note": "G3"},
+        {"string": "D", "note": "D4"},
+        {"string": "A", "note": "A4"},
+        {"string": "E", "note": "E5"},
+        {"string": "B", "note": "B5"}
+      ]
+    },
+    "rebab": {
+      "strings": [
+        {"string": "D", "note": "D4"},
+        {"string": "A", "note": "A4"},
+        {"string": "E", "note": "E5"}
+      ]
+    },
+    "lute": {
+      "strings": [
+        {"string": "G", "note": "G2"},
+        {"string": "D", "note": "D3"},
+        {"string": "A", "note": "A3"},
+        {"string": "E", "note": "E4"},
+        {"string": "B", "note": "B4"},
+        {"string": "F#", "note": "F#4"}
+      ]
+    },
+
+    "berimbau": {
+      "strings": [
+        {"string": "A", "note": "A3"},
+        {"string": "E", "note": "E4"}
+      ]
+    },
+    "hardanger_fiddle": {
+      "strings": [
+        {"string": "C", "note": "C3"},
+        {"string": "G", "note": "G3"},
+        {"string": "D", "note": "D4"},
+        {"string": "A", "note": "A4"},
+        {"string": "C", "note": "C4"},
+        {"string": "E", "note": "E5"}
+      ]
+    },
+    "saz": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "G", "note": "G4"},
+        {"string": "D", "note": "D5"},
+        {"string": "A", "note": "A5"}
+      ]
+    },
+    "koto": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"},
+        {"string": "C", "note": "C5"},
+        {"string": "D", "note": "D5"},
+        {"string": "E", "note": "E5"}
+      ]
+    },
+    "kalimba": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"},
+        {"string": "C", "note": "C5"},
+        {"string": "D", "note": "D5"},
+        {"string": "E", "note": "E5"},
+        {"string": "F", "note": "F5"},
+        {"string": "G", "note": "G5"},
+        {"string": "A", "note": "A5"},
+        {"string": "B", "note": "B5"}
+      ]
+    },
+    "flute": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"},
+        {"string": "C", "note": "C5"}
+      ]
+    },
+    "oboe": {
+      "strings": [
+        {"string": "B♭", "note": "B♭3"},
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "clarinet": {
+      "strings": [
+        {"string": "E", "note": "E3"},
+        {"string": "F", "note": "F3"},
+        {"string": "G", "note": "G3"},
+        {"string": "A", "note": "A3"},
+        {"string": "B", "note": "B3"},
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"}
+      ]
+    },
+    "bassoon": {
+      "strings": [
+        {"string": "B♭", "note": "B♭1"},
+        {"string": "C", "note": "C2"},
+        {"string": "D", "note": "D2"},
+        {"string": "E", "note": "E2"},
+        {"string": "F", "note": "F2"},
+        {"string": "G", "note": "G2"},
+        {"string": "A", "note": "A2"},
+        {"string": "B", "note": "B2"},
+        {"string": "C", "note": "C3"}
+      ]
+    },
+    "saxophone": {
+      "strings": [
+        {"string": "B♭", "note": "B♭3"},
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"},
+        {"string": "C", "note": "C5"}
+      ]
+    },
+    "piccolo": {
+      "strings": [
+        {"string": "C", "note": "C5"},
+        {"string": "D", "note": "D5"},
+        {"string": "E", "note": "E5"},
+        {"string": "F", "note": "F5"},
+        {"string": "G", "note": "G5"},
+        {"string": "A", "note": "A5"},
+        {"string": "B", "note": "B5"},
+        {"string": "C", "note": "C6"}
+      ]
+    },
+    "bass_clarinet": {
+      "strings": [
+        {"string": "B♭", "note": "B♭2"},
+        {"string": "C", "note": "C3"},
+        {"string": "D", "note": "D3"},
+        {"string": "E", "note": "E3"},
+        {"string": "F", "note": "F3"},
+        {"string": "G", "note": "G3"},
+        {"string": "A", "note": "A3"},
+        {"string": "B", "note": "B3"}
+      ]
+    },
+    "soprano_saxophone": {
+      "strings": [
+        {"string": "B♭", "note": "B♭4"},
+        {"string": "C", "note": "C5"},
+        {"string": "D", "note": "D5"},
+        {"string": "E", "note": "E5"},
+        {"string": "F", "note": "F5"},
+        {"string": "G", "note": "G5"},
+        {"string": "A", "note": "A5"},
+        {"string": "B", "note": "B5"}
+      ]
+    },
+    "marimba": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "xylophone": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "timpani": {
+      "strings": [
+        {"string": "C", "note": "C3"},
+        {"string": "G", "note": "G3"},
+        {"string": "D", "note": "D4"},
+        {"string": "A", "note": "A4"}
+      ]
+    },
+    "piano": {
+      "strings": [
+        "A0", "A#0", "B0", "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1",
+        "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2",
+        "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3",
+        "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4",
+        "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5",
+        "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6",
+        "A6", "A#6", "B6", "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7",
+        "A7", "A#7", "B7", "C8"
+      ]
+    },
+       "piano": {
+          "strings": [
+            {"string": "A", "note": "A0"},
+                {"string": "A#", "note": "A#0"},
+                {"string": "B", "note": "B0"},
+                {"string": "C", "note": "C1"},
+                {"string": "C#", "note": "C#1"},
+                {"string": "D", "note": "D1"},
+                {"string": "D#", "note": "D#1"},
+                {"string": "E", "note": "E1"},
+                {"string": "F", "note": "F1"},
+                {"string": "F#", "note": "F#1"},
+                {"string": "G", "note": "G1"},
+                {"string": "G#", "note": "G#1"},
+                {"string": "A", "note": "A1"},
+                {"string": "A#", "note": "A#1"},
+                {"string": "B", "note": "B1"},
+                {"string": "C", "note": "C2"},
+                {"string": "C#", "note": "C#2"},
+                {"string": "D", "note": "D2"},
+                {"string": "D#", "note": "D#2"},
+                {"string": "E", "note": "E2"},
+                {"string": "F", "note": "F2"},
+                {"string": "F#", "note": "F#2"},
+                {"string": "G", "note": "G2"},
+                {"string": "G#", "note": "G#2"},
+                {"string": "A", "note": "A2"},
+                {"string": "A#", "note": "A#2"},
+                {"string": "B", "note": "B2"},
+                {"string": "C", "note": "C3"},
+                {"string": "C#", "note": "C#3"},
+                {"string": "D", "note": "D3"},
+                {"string": "D#", "note": "D#3"},
+                {"string": "E", "note": "E3"},
+                {"string": "F", "note": "F3"},
+                {"string": "F#", "note": "F#3"},
+                {"string": "G", "note": "G3"},
+                {"string": "G#", "note": "G#3"},
+                {"string": "A", "note": "A3"},
+                {"string": "A#", "note": "A#3"},
+                {"string": "B", "note": "B3"},
+                {"string": "C", "note": "C4"},
+                {"string": "C#", "note": "C#4"},
+                {"string": "D", "note": "D4"},
+                {"string": "D#", "note": "D#4"},
+                {"string": "E", "note": "E4"},
+                {"string": "F", "note": "F4"},
+                {"string": "F#", "note": "F#4"},
+                {"string": "G", "note": "G4"},
+                {"string": "G#", "note": "G#4"},
+                {"string": "A", "note": "A4"},
+                {"string": "A#", "note": "A#4"},
+                {"string": "B", "note": "B4"},
+                {"string": "C", "note": "C5"},
+                {"string": "C#", "note": "C#5"},
+                {"string": "D", "note": "D5"},
+                {"string": "D#", "note": "D#5"},
+                {"string": "E", "note": "E5"},
+                {"string": "F", "note": "F5"},
+                {"string": "F#", "note": "F#5"},
+                {"string": "G", "note": "G5"},
+                {"string": "G#", "note": "G#5"},
+                {"string": "A", "note": "A5"},
+                {"string": "A#", "note": "A#5"},
+                {"string": "B", "note": "B5"},
+                {"string": "C", "note": "C6"},
+                {"string": "C#", "note": "C#6"},
+                {"string": "D", "note": "D6"},
+                {"string": "D#", "note": "D#6"},
+                {"string": "E", "note": "E6"},
+                {"string": "F", "note": "F6"},
+                {"string": "F#", "note": "F#6"},
+                {"string": "G", "note": "G6"},
+                {"string": "G#", "note": "G#6"},
+                {"string": "A", "note": "A6"},
+                {"string": "A#", "note": "A#6"},
+                {"string": "B", "note": "B6"},
+                {"string": "C", "note": "C7"},
+                {"string": "C#", "note": "C#7"},
+                {"string": "D", "note": "D7"},
+                {"string": "D#", "note": "D#7"},
+                {"string": "E", "note": "E7"},
+                {"string": "F", "note": "F7"},
+                {"string": "F#", "note": "F#7"},
+                {"string": "G", "note": "G7"},
+                {"string": "G#", "note": "G#7"},
+                {"string": "A", "note": "A7"},
+                {"string": "A#", "note": "A#7"},
+                {"string": "B", "note": "B7"},
+                {"string": "C", "note": "C8"}
+          ]
+        },
+
+    "trumpet": {
+      "strings": [
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "trombone": {
+      "strings": [
+        {"string": "B♭", "note": "B♭2"},
+        {"string": "C", "note": "C3"},
+        {"string": "D", "note": "D3"},
+        {"string": "E", "note": "E3"},
+        {"string": "F", "note": "F3"},
+        {"string": "G", "note": "G3"},
+        {"string": "A", "note": "A3"}
+      ]
+    },
+    "french_horn": {
+      "strings": [
+        {"string": "B♭", "note": "B♭2"},
+        {"string": "C", "note": "C3"},
+        {"string": "D", "note": "D3"},
+        {"string": "E", "note": "E3"},
+        {"string": "F", "note": "F3"},
+        {"string": "G", "note": "G3"},
+        {"string": "A", "note": "A3"},
+        {"string": "B", "note": "B3"}
+      ]
+    },
+    "tuba": {
+      "strings": [
+        {"string": "C", "note": "C2"},
+        {"string": "D", "note": "D2"},
+        {"string": "E", "note": "E2"},
+        {"string": "F", "note": "F2"},
+        {"string": "G", "note": "G2"},
+        {"string": "A", "note": "A2"},
+        {"string": "B", "note": "B2"},
+        {"string": "C", "note": "C3"}
+      ]
+    },
+    "cornet": {
+      "strings": [
+        {"string": "B♭", "note": "B♭3"},
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"}
+      ]
+    },
+    "flugelhorn": {
+      "strings": [
+        {"string": "B♭", "note": "B♭3"},
+        {"string": "C", "note": "C4"},
+        {"string": "D", "note": "D4"},
+        {"string": "E", "note": "E4"},
+        {"string": "F", "note": "F4"},
+        {"string": "G", "note": "G4"},
+        {"string": "A", "note": "A4"},
+        {"string": "B", "note": "B4"}
+      ]
+    },
+    "sousaphone": {
+      "strings": [
+        {"string": "B♭", "note": "B♭2"},
+        {"string": "C", "note": "C3"},
+        {"string": "D", "note": "D3"},
+        {"string": "E", "note": "E3"},
+        {"string": "F", "note": "F3"},
+        {"string": "G", "note": "G3"},
+        {"string": "A", "note": "A3"},
+        {"string": "B", "note": "B3"}
+      ]
+    }
+  }
+}

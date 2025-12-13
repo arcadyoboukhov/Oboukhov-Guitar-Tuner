@@ -20,5 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "tuneralpha"
+
 include(":app")
  

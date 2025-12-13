@@ -1,115 +1,52 @@
-package com.example.tuneralpha
 
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.platform.LocalContext
+package com.example.tuneralpha
+import be.tarsos.dsp.filters.BandPass
+import android.Manifest
+import androidx.compose.ui.res.painterResource
+import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
-import androidx.compose.runtime.*
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.tuneralpha.ui.theme.TuneralphaTheme
-import androidx.compose.foundation.Canvas
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.geometry.Size
-import android.Manifest
-import android.content.pm.PackageManager
-import android.util.Log
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaRecorder
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.math.*
-import android.os.Build
-import androidx.compose.runtime.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import android.content.Context
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.rememberLauncherForActivityResult
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.Math.abs
-import kotlin.math.abs
-import kotlinx.coroutines.isActive
-import kotlin.math.abs
 import be.tarsos.dsp.AudioDispatcher
-import be.tarsos.dsp.io.android.AudioDispatcherFactory
-import be.tarsos.dsp.pitch.PitchProcessor
-import be.tarsos.dsp.pitch.PitchDetectionHandler
-import be.tarsos.dsp.io.TarsosDSPAudioFormat
-import be.tarsos.dsp.AudioEvent
-import be.tarsos.dsp.pitch.PitchDetectionResult
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
-import be.tarsos.dsp.pitch.PitchProcessor.PitchEstimationAlgorithm
-import kotlinx.coroutines.delay
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.MutableState
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.io.IOException
 import be.tarsos.dsp.AudioProcessor
-import org.json.JSONObject
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.clickable
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
-import kotlin.math.roundToInt
-
-var selectedInstrumentName = "Not Selected"
-var counter = 0
-val MutableList: MutableList<String> = mutableListOf()
-var correctPitch = "No Pitch"
-
-// Data model for your JSON structure
-data class Instrument(
-    val strings: List<StringNote>
-)
-
-data class StringNote(
-    val string: String,
-    val note: String
-)
-
-data class InstrumentsResponse(
-    val strings: Map<String, Instrument>
-)
+import be.tarsos.dsp.io.android.AudioDispatcherFactory
+import be.tarsos.dsp.pitch.PitchDetectionHandler
+import be.tarsos.dsp.pitch.PitchProcessor
+import com.example.tuneralpha.ui.theme.TuneralphaTheme
+import java.util.Locale
+import kotlin.math.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import androidx.annotation.DrawableRes
 
 
 
@@ -119,276 +56,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TuneralphaTheme {
-                var currentScreen by remember { mutableStateOf("home") }
-                var selectedInstrument by remember { mutableStateOf("") }
+                // Set the initial screen to "tuner" instead of "home"
+                val currentScreen by remember { mutableStateOf("tuner") }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     when (currentScreen) {
-                        "home" -> HomeScreen(
-                            modifier = Modifier.padding(innerPadding),
-                            onModeSelected = { currentScreen = "modeSelection" }, // If you want to keep this option
-                            onTunerSelected = { currentScreen = "tuner" } // Navigate to Tuner
-                        )
-                        "tuner" -> TunerScreen(
-                            instrumentName = selectedInstrument,
-                            modifier = Modifier.padding(innerPadding),
-                            onBack = { currentScreen = "modeSelection" }
-                        )
+                        "tuner" -> TunerScreen(modifier = Modifier.padding(innerPadding))
                     }
                 }
             }
         }
     }
 }
-
-
-
-
-@Composable
-fun HomeScreen(modifier: Modifier = Modifier, onModeSelected: () -> Unit, onTunerSelected: () -> Unit) {
-    var termsAccepted by remember { mutableStateOf(false) }
-    var privacyAccepted by remember { mutableStateOf(false) }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        BackgroundVideo()
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .background(Color(0xFF000000).copy(alpha = 0.31f)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.your_image),
-                contentDescription = null,
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(bottom = 16.dp),
-                contentScale = ContentScale.None
-            )
-
-            Text(
-                text = "NeoTune",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF6200EE),
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            Button(
-                onClick = {
-                    onTunerSelected() // Navigate to Tuner Screen
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (termsAccepted && privacyAccepted) Color(0xFF6200EE) else Color.Gray,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier.size(160.dp, 56.dp),
-                enabled = termsAccepted && privacyAccepted
-            ) {
-                Text(text = "Go to Tuner")
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = termsAccepted,
-                    onCheckedChange = { termsAccepted = it },
-                    colors = CheckboxDefaults.colors(Color(0xFF6200EE))
-                )
-                Text(text = "I agree to the Terms of Service", color = Color.White, fontSize = 16.sp)
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = privacyAccepted,
-                    onCheckedChange = { privacyAccepted = it },
-                    colors = CheckboxDefaults.colors(Color(0xFF6200EE))
-                )
-                Text(text = "I agree to the Privacy Policy", color = Color.White, fontSize = 16.sp)
-            }
-        }
-    }
-}
-
-
-
-
-
 
 fun checkMicrophonePermission(context: Context): Boolean {
-    return ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+    return ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
 }
-
-@Composable
-fun ShowInstrumentMenu(
-    context: Context,
-    showMenu: MutableState<Boolean>,
-    instrumentName: String
-) {
-    if (showMenu.value) {
-        // Use the correct filename based on where you've placed it in assets
-        val instrumentFileName = "json/string_keys_preset.json.txt"
-        val jsonObject = loadInstrumentsFromAsset(context, instrumentFileName)
-
-        // Declare instrumentNames here to make it accessible outside of the let block
-        val instrumentNames = remember { mutableStateListOf<String>() }
-
-        jsonObject?.let { json ->
-            // Retrieve keys of instruments in the "strings" section safely
-            json.optJSONObject("strings")?.let { stringsJson ->
-                val instruments = stringsJson.keys()
-                while (instruments.hasNext()) {
-                    val key = instruments.next()
-                    instrumentNames.add(key)
-                }
-
-                // Log the instrument names
-
-            } ?: Log.e("ShowInstrumentMenu", "No 'strings' found in JSON.")
-        } ?: Log.e("ShowInstrumentMenu", "Failed to load JSON.")
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Dismiss menu when tapping outside of it
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { showMenu.value = false } // Tap to dismiss
-                    .background(Color.Transparent)
-            )
-
-            // Add a column to show instrument names as buttons
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .verticalScroll(rememberScrollState()) // Scrollable column
-            ) {
-                instrumentNames.forEach { name ->
-                    Button(
-                        onClick = {
-                            val jsonInstrument = jsonObject?.optJSONObject("strings")?.optJSONObject(name) // Get the specific instrument
-                            if (jsonInstrument != null) {
-
-
-                                // Retrieve the strings array
-                                val stringsArray = jsonInstrument.optJSONArray("strings")
-                                if (stringsArray != null) {
-                                    for (i in 0 until stringsArray.length()) {
-                                        val stringObject = stringsArray.optJSONObject(i)
-                                        stringObject?.let {
-                                            val note = it.optString("note") // Retrieve the note
-                                            note?.let { MutableList.add(it) } // Add to valArray if not null
-                                        }
-                                    }
-
-                                    selectedInstrumentName = name
-                                    Log.d("Selected Instrument", "Selected: $selectedInstrumentName with notes: $MutableList")
-                                    showMenu.value = false // Close the menu after selection
-                                } else {
-                                    Log.e("Selected Instrument", "No strings found for instrument: $name")
-                                }
-                            } else {
-                                Log.e("Selected Instrument", "Instrument $name not found in JSON.")
-                                showMenu.value = false // Ensure menu is closed if instrument is not found
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                            contentColor = Color.White
-                        ),
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(text = name)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ShowCustomPreset(
-    context: Context,
-    showMenu: MutableState<Boolean>,
-    instrumentName: String
-) {
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Dismiss menu when tapping outside of it
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { showMenu.value = false } // Tap to dismiss
-                .background(Color.Transparent)
-        )
-
-        // Display preset options
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .background(Color(0x4D6200EE)) // Example background color
-                .verticalScroll(rememberScrollState()) // Make it scrollable
-        ) {
-            Button(
-                onClick = {  },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier.size(160.dp, 56.dp)
-            ) {
-                Text(text = "Select Custom Preset")
-            }
-            Button(
-                onClick = {  },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier.size(160.dp, 56.dp)
-            ) {
-                Text(text = "Make Custom Preset")
-            }
-            Button(
-                onClick = {  },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier.size(160.dp, 56.dp)
-            ) {
-                Text(text = "Delete Custom Preset")
-            }
-        }
-    }
-}
-
-
-
-
-private fun loadInstrumentsFromAsset(context: Context, fileName: String): JSONObject? {
-    return try {
-        // Use a relative path for the JSON file from the assets folder
-        val inputStream = context.assets.open(fileName)
-        val jsonString = inputStream.bufferedReader().use { it.readText() }
-        JSONObject(jsonString)
-    } catch (e: IOException) {
-        Log.e("LoadInstruments", "Error loading JSON", e)
-        null
-    }
-}
-
 
 fun getPitchForNote(note: String): Float {
     return when (note) {
@@ -495,82 +179,349 @@ fun getPitchForNote(note: String): Float {
 
         // 8th octave
         "C8" -> 4186.01f
-
         else -> 0f // Return 0 if the note is not found
     }
 }
 
-fun displayCorrectPitch(note: String) {
-    val pitch = getPitchForNote(note) // Get the pitch for the given note
-    if (pitch > 0) {
-        val stringRepresentation: String = pitch.toString()
-        correctPitch = stringRepresentation
-    } else {
-        println("Note $note is not found.")
-    }
+fun getNoteForPitch(pitch: Float): String {
+    // List of target pitches in ascending order
+    val pitchValues =
+        listOf(
+            27f,
+            29f,
+            31f,
+            33f,
+            35f,
+            37f,
+            39f,
+            41f,
+            44f,
+            46f,
+            49f,
+            52f,
+            55f,
+            58f,
+            62f,
+            65f,
+            69f,
+            73f,
+            78f,
+            82f,
+            87f,
+            93f,
+            98f,
+            104f,
+            110f,
+            117f,
+            123f,
+            131f,
+            139f,
+            147f,
+            156f,
+            165f,
+            175f,
+            185f,
+            196f,
+            208f,
+            220f,
+            233f,
+            247f,
+            262f,
+            277f,
+            294f,
+            311f,
+            330f,
+            349f,
+            370f,
+            392f,
+            415f,
+            440f,
+            466f,
+            494f,
+            523f,
+            554f,
+            587f,
+            622f,
+            659f,
+            698f,
+            740f,
+            784f,
+            831f,
+            880f,
+            932f,
+            988f,
+            1047f,
+            1109f,
+            1175f,
+            1245f,
+            1319f,
+            1397f,
+            1480f,
+            1568f,
+            1661f,
+            1760f,
+            1865f,
+            1976f,
+            2093f,
+            2217f,
+            2349f,
+            2489f,
+            2637f,
+            2794f,
+            2960f,
+            3136f,
+            3322f,
+            3520f,
+            3729f,
+            3951f,
+            4186f
+        )
+
+    // Corresponding notes aligned with pitchValues list
+    val notes =
+        listOf(
+            "A0 ",
+            "A#0",
+            "B0 ",
+            "C1 ",
+            "C#1",
+            "D1 ",
+            "D#1",
+            "E1 ",
+            "F1 ",
+            "F#1",
+            "G1 ",
+            "G#1",
+            "A1 ",
+            "A#1",
+            "B1 ",
+            "C2 ",
+            "C#2",
+            "D2 ",
+            "D#2",
+            "E2 ",
+            "F2 ",
+            "F#2",
+            "G2 ",
+            "G#2",
+            "A2 ",
+            "A#2",
+            "B2 ",
+            "C3 ",
+            "C#3",
+            "D3 ",
+            "D#3",
+            "E3 ",
+            "F3 ",
+            "F#3",
+            "G3 ",
+            "G#3",
+            "A3 ",
+            "A#3",
+            "B3 ",
+            "C4 ",
+            "C#4",
+            "D4 ",
+            "D#4",
+            "E4 ",
+            "F4 ",
+            "F#4",
+            "G4 ",
+            "G#4",
+            "A4 ",
+            "A#4",
+            "B4 ",
+            "C5 ",
+            "C#5",
+            "D5 ",
+            "D#5",
+            "E5 ",
+            "F5 ",
+            "F#5",
+            "G5 ",
+            "G#5",
+            "A5 ",
+            "A#5",
+            "B5 ",
+            "C6 ",
+            "C#6",
+            "D6 ",
+            "D#6",
+            "E6 ",
+            "F6 ",
+            "F#6",
+            "G6 ",
+            "G#6",
+            "A6 ",
+            "A#6",
+            "B6 ",
+            "C7 ",
+            "C#7",
+            "D7 ",
+            "D#7",
+            "E7 ",
+            "F7 ",
+            "F#7",
+            "G7 ",
+            "G#7",
+            "A7 ",
+            "A#7",
+            "B7 ",
+            "C8 "
+        )
+
+    // Find the index of the closest pitch value
+    val index =
+        pitchValues.indices.minByOrNull { abs(pitch - pitchValues[it]) } ?: return "Unknown Note"
+
+    // Return the corresponding note
+    return notes[index]
 }
 
-
-fun getCurrentNote(): String {
-    Log.d("counter", "$counter")
-    if (MutableList.isNotEmpty() && counter in 0 until MutableList.size) {
-        var display1 = MutableList[counter]
-        displayCorrectPitch(display1)
-        return display1
-    } else {
-        var display1 = "No Notes"
-        return display1
-    }
-}
-
-// Define this outside of the TunerScreen function
-object Processing {
-    private val notes = listOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
-
-    fun closestNote(pitchInHz: Float): String {
-        val midiNote = (69 + 12 * Math.log(pitchInHz.toDouble() / 440) / Math.log(2.0)).toInt() // Convert pitchInHz to Double
-        return notes[(midiNote % 12 + 12) % 12]
-    }
-}
 
 
 
 @Composable
-fun TunerScreen(
-    instrumentName: String,
-    modifier: Modifier = Modifier,
-    onBack: () -> Unit
-) {
+fun TunerScreen(modifier: Modifier = Modifier) {
 
-    val pitchState = remember { mutableStateOf(0) }
-    val currentPitch = remember { mutableStateOf(0f) }
-    val showMenu = remember { mutableStateOf(false) }
-    val showMenu1 = remember { mutableStateOf(false) }
+    val pitchState = remember { mutableFloatStateOf(0f) }
+    val notesList = listOf("E4", "B3", "G3", "D3", "A2", "E2")
+    val mutableList = remember { mutableStateOf(notesList.toMutableList()) }
+    var counter by remember { mutableIntStateOf(0) }
+    val currentNote = remember { mutableStateOf("") }
+    val arrowState = remember { mutableStateOf("") }
     val context = LocalContext.current
     var hasMicrophonePermission by remember { mutableStateOf(checkMicrophonePermission(context)) }
-    val currentPitchAngle = remember { mutableStateOf(0f) }
+    var correctPitch by remember { mutableStateOf("No Pitch") }
+    var correctNotePitch by remember { mutableFloatStateOf(0f) }
+    val noteSet = remember { mutableStateOf(false) }
 
+    fun displayCorrectPitch(note: String) {
+        val pitch = getPitchForNote(note)
+        println(" the pitch of the correct note $pitch")
+        val correctPitchNote = note // Get the pitch for the given note
+        if (pitch > 0) {
 
+            correctPitch = correctPitchNote
+            correctNotePitch = pitch
+            noteSet.value = true
+        } else {
+            println("Note $note is not found.")
+        }
+    }
 
+    // Initialize the first note on load
+    LaunchedEffect(Unit) {
+        if (mutableList.value.isNotEmpty()) {
+            currentNote.value = mutableList.value[0]
+            displayCorrectPitch(mutableList.value[0])
+        }
+    }
+
+    val isFrozen = remember { mutableStateOf(false) }
+
+    // Observe arrowState and trigger freeze on "check"
+    LaunchedEffect(arrowState.value) {
+        if (arrowState.value == "check") {
+            isFrozen.value = true
+            // Launch a coroutine to unfreeze after 2 seconds
+            launch {
+                delay(2000L)
+                isFrozen.value = false
+            }
+        }
+    }
+
+    @DrawableRes
+    fun getImageForNote(note: String): Int {
+        return when (note) {
+            "E4" -> R.drawable.one
+            "B3" -> R.drawable.two
+            "G3" -> R.drawable.three
+            "D3" -> R.drawable.four
+            "A2" -> R.drawable.five
+            "E2" -> R.drawable.six
+            else -> R.drawable.your_image1
+        }
+    }
 
     fun startPitchDetection() {
         if (hasMicrophonePermission) {
             Log.d("PitchDetection", "Starting pitch detection...")
-            val dispatcher: AudioDispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 4096, 0)
+            if (!noteSet.value) {
+                println("No note selected. Pitch detection will not start.")
+                return
+            }
+
+
+            // List to hold the last 5 pitch values
+            val lastPitches = mutableListOf<Float>()
+            var lastNote: String? = null
+            var lastResetTime = System.currentTimeMillis()
+            val bandPassFilter = BandPass(40.0f, 1000.0f, 22050.0f)
+            val dispatcher: AudioDispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 8192, 0)
+            dispatcher.addAudioProcessor(bandPassFilter)
+
+
+
+            var lastProcessTime = System.currentTimeMillis() - 1000
             val pdh = PitchDetectionHandler { res, _ ->
                 val pitchInHz: Float = res.pitch
+                val currentTime = System.currentTimeMillis()
 
-                if (pitchInHz <= 0) {
-                    // Handle the case where the pitch is not valid
-                } else {
-                    // Convert the pitch from Float to Int
-                    val pitchInHzInt: Int = pitchInHz.roundToInt()
-                    pitchState.value = pitchInHzInt
+                // Enforce 1-second delay between processing
+                if (currentTime - lastProcessTime >= 1000) {
+                    lastProcessTime = currentTime
+
+                if (pitchInHz > 0) {
+                    // Only process if within guitar frequency range
+                    if (pitchInHz in 40f..1000f) {
+                        // Existing code to process pitch
+                        // Check if note has changed, update state, etc.
+                        val currentNoteStr = getNoteForPitch(pitchInHz)
+                        if (currentNoteStr != lastNote) {
+                            lastPitches.clear()
+                            lastNote = currentNoteStr
+                            lastResetTime = System.currentTimeMillis()
+                        }
+
+                        // Reset list periodically
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastResetTime > 1000) {
+                            lastPitches.clear()
+                            lastResetTime = currentTime
+                        }
+
+                        // Only proceed if within guitar range
+                        if (abs(pitchInHz - correctNotePitch) <= 200f) {
+                            lastPitches.add(pitchInHz)
+                            // Keep only last 20 values
+                            if (lastPitches.size > 1) {
+                                lastPitches.removeAt(0)
+                            }
+
+                            // Compute the average of the last 20 pitches
+                            val averagePitch = lastPitches.sum() / lastPitches.size
+
+                            //val latestPitch = lastPitches.last()
+                            val roundedAverage = String.format(Locale.US, "%.2f", averagePitch).toFloat()
+                            currentNote.value = getNoteForPitch(roundedAverage)
+                            pitchState.floatValue = roundedAverage
+                        }}
+                    } else {
+                        // Ignore pitches outside guitar range
+                    }
+                }
+
+
+
+                else {
+                    // Handle invalid pitch if necessary
                 }
             }
 
             val pitchProcessor: AudioProcessor =
-                PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050F, 4096, pdh)
+                PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050F, 8192, pdh)
             dispatcher.addAudioProcessor(pitchProcessor)
 
             val audioThread = Thread(dispatcher, "Audio Thread")
@@ -580,27 +531,80 @@ fun TunerScreen(
         }
     }
 
-
     // Handle Permission Result
-    val resultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        hasMicrophonePermission = isGranted
-        // Restart pitch detection if permission is granted
-        if (isGranted) {
-            startPitchDetection()
+    val resultLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+                isGranted: Boolean ->
+            hasMicrophonePermission = isGranted
+            // Restart pitch detection if permission is granted
+            if (isGranted) {
+                startPitchDetection()
+            }
+        }
+    fun getPitchDirection(
+        currentPitch: Float,
+        correctPitch: Float,
+        tolerance: Float = 1f
+    ): String {
+        return when {
+            abs(currentPitch - correctPitch) <= tolerance ->
+                "check" // Within tolerance: indicate correct
+            currentPitch > correctPitch -> "up" // Current pitch is higher
+            else -> "down" // Current pitch is lower
         }
     }
-    LaunchedEffect(pitchState.value) {
-        delay(100) // Introduce a delay of 500 milliseconds
 
-        val note = getCurrentNote()
-        val correctFloat = getPitchForNote(note) // Get the pitch as a Float
-        val correct = correctFloat.toInt() // Convert Float to Int
-
-        // Calculate the angle difference based on the current pitch and correct pitch
-        currentPitchAngle.value = calculatePitchAngle(pitchState.value, correct)
+    fun getCurrentNote(): String {
+        Log.d("counter", "$counter.value}")
+        if (mutableList.value.isNotEmpty() && counter in 0 until mutableList.value.size) {
+            val display1 = mutableList.value[counter]
+            displayCorrectPitch(display1)
+            return display1
+        } else {
+            val display1 = "No Notes"
+            return display1
+        }
     }
+
+
+
+
+
+    fun noteToGuitarString(note: String): String {
+        return when (note.trim()) {
+
+            "E4" -> "1st string (E)"
+            "B3" -> "2nd string (B)"
+            "G3" -> "3rd string (G)"
+            "D3" -> "4th string (D)"
+            "A2" -> "5th string (A)"
+            "E2" -> "6th string (E)"
+
+            else -> "Unknown     "
+        }
+    }
+
+    fun currentNote(): String {
+        val note = currentNote.value
+        return noteToGuitarString(note)
+    }
+
+    fun correctString(): String {
+        val noteP = getNoteForPitch(correctNotePitch)
+        return noteToGuitarString(noteP)
+    }
+
+    fun correctNote(): String {
+        val noteP = getNoteForPitch(correctNotePitch)
+        return noteP
+    }
+
+    LaunchedEffect(pitchState.floatValue, correctNotePitch) {
+        arrowState.value = getPitchDirection(pitchState.floatValue, correctNotePitch)
+    }
+
+    LaunchedEffect(counter) { currentNote.value = getCurrentNote() }
+
     // Requesting permission if not already granted
     LaunchedEffect(Unit) {
         if (!hasMicrophonePermission) {
@@ -611,376 +615,241 @@ fun TunerScreen(
         }
     }
 
-
-
-
-
     if (!hasMicrophonePermission) {
         Text("Microphone permission is required for tuning.", color = Color.Red, fontSize = 16.sp)
     } else {
-        Box(modifier = modifier.fillMaxSize()) {
-            BackgroundVideo()
-        }
-        if (showMenu.value) {
+        Box(modifier = modifier.fillMaxSize()) { BackgroundVideo() }
+        Column(
+            modifier = Modifier.fillMaxSize().background(Color(0xFF000000).copy(alpha = 0.31f)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize() // Fill the entire screen to manage taps outside
-
+                modifier =
+                Modifier.size(width = 200.dp, height = 40.dp) // Set the desired size
+                    .padding(bottom = 32.dp) // Adjust the padding as needed
             ) {
-                // Dismiss menu when tapping outside of it
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { showMenu.value = false } // Click box to dismiss menu
-                        .background(Color.Transparent) // Make sure it doesn't take up space
-                )
-
-                // Menu Box
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(Color(0x4D6200EE)) // Updated to purple with 30% alpha
-                        .align(Alignment.Center) // Align the menu at the center
-                        .padding(16.dp) // Add padding inside the menu
-                ) {
-                    Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .background(Color(0xFF000000).copy(alpha = 0.7f)),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Show instrument selection menu
-                        ShowInstrumentMenu(context, showMenu, instrumentName)
-                    }
-                }
+                // This box is empty but takes up space
             }
-        }
-
-        else if (showMenu1.value) {
-            Box(
+            val rawNote = correctNote()
+            val trimmedNote = rawNote.trim()
+            val imageResId = getImageForNote(trimmedNote)
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = "Note Image",
                 modifier = Modifier
-                    .fillMaxSize() // Fill the entire screen to manage taps outside
+                    .size(300.dp)
+                    .padding(bottom = 64.dp)
+            )
 
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Dismiss menu when tapping outside of it
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { showMenu1.value = false }
-                        .background(Color.Transparent) // Make sure it doesn't take up space
+                Text(
+                    text = "Move: ",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF808080),
+                    modifier = Modifier.weight(1f)
                 )
-
-                // Menu Box
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(Color(0x4D6200EE)) // Updated to purple with 30% alpha
-                        .align(Alignment.Center) // Align the menu at the center
-                        .padding(16.dp) // Add padding inside the menu
-                ) {
-                    Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .background(Color(0xFF000000).copy(alpha = 0.7f)),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Show instrument selection menu
-                        ShowCustomPreset(context, showMenu, instrumentName)
+                Box(modifier = Modifier.size(70.dp)) {
+                    when (arrowState.value) {
+                        "check" ->
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Correct",
+                                tint = Color.Green,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        "up" ->
+                            Icon(
+                                imageVector = Icons.Default.ArrowDownward,
+                                contentDescription = "Too High",
+                                tint = Color.Red,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        "down" ->
+                            Icon(
+                                imageVector = Icons.Default.ArrowUpward,
+                                contentDescription = "Too Low",
+                                tint = Color.Red,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        else -> {} // No icon
                     }
                 }
+                Text(
+                    text = "To Match Values",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF808080),
+                    // No weight here, so this will take only necessary space
+                )
             }
 
-        }
 
-        else {
-            // Only show these buttons if the menu is not open
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .background(Color(0xFF000000).copy(alpha = 0.31f)),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Display the instrument name
                 Text(
-                    text = "Tuning for: $instrumentName",
+                    text = "Correct Pitch: ",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6200EE),
-                    modifier = Modifier.padding(bottom = 32.dp)
+                    color = Color(0xFF808080),
+                    modifier = Modifier.weight(1f)
                 )
-
-                // Display buttons
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 116.dp), // Add bottom margin here
-                    horizontalArrangement = Arrangement.SpaceEvenly // Space buttons evenly within the row
-                ) {
-                    Button(
-                        onClick = { showMenu.value = true }, // Show menu when clicked
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(50),
-                        modifier = Modifier.size(160.dp, 56.dp)
-                    ) {
-                        Text(text = "Select Instrument Type")
-                    }
-                    Button(
-                        onClick = { showMenu1.value = true },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(50),
-                        modifier = Modifier.size(160.dp, 56.dp)
-                    ) {
-                        Text(text = "Custom Preset")
-                    }
-                }
-
-                // Additional UI components to show only when the menu is not open
-                Row(
-                    modifier = Modifier.padding(bottom = 32.dp)
-                ) {
-
-                    Text(
-                        text = "pitch state: ${pitchState.value}",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF6200EE),
-                        modifier = Modifier.weight(1f) // Optional: Makes the texts share space equally
-                    )
-
-                    Text(
-                        text = "Correct: ${correctPitch}",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF6200EE),
-                        modifier = Modifier.weight(1f) // Optional: Makes the texts share space equally
-                    )
-                }
-
-                TunerDial(currentPitchAngle = currentPitchAngle.value, targetPitchAngle = 0f)
-
-
                 Text(
-
-                    text = getCurrentNote(),
+                    text = " $correctNotePitch ",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6200EE),
-                    modifier = Modifier.weight(1f) // Optional: Makes the texts share space equally
+                    color = Color(0xFFFFFFFF),
+                    // No weight here, so this will take only necessary space
                 )
-
-
-
-
-
-
-// Optionally display the angle
                 Text(
-                    text = "Angle Difference: ${currentPitchAngle.value}°", // Correctly access the value
+                    text = " ${correctString()}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6200EE),
-                    modifier = Modifier.weight(1f) // Optional: Makes the texts share space equally
+                    color = Color(0xFF808080),
+                    // No weight here, so this will take only necessary space
                 )
+            }
 
 
 
 
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Current pitch:",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF808080),
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = " ${String.format("%.2f", pitchState.floatValue)} ",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFFFFFFF),
+                    // No weight here, so this will take only necessary space
+                )
+                Text(
+                    text = " ${currentNote()}",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF808080),
+                    // No weight here, so this will take only necessary space
+                )
+            }
 
+            //
+            //                TunerDial(currentPitchAngle = currentPitchAngle.value,
+            // targetPitchAngle = 0f, pitchState = pitchState.value)
 
-
-
-
-                // Only display note control buttons when menu is closed
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly // Space buttons evenly within the row
-                ) {
-                    Button(
-                        onClick = {
-                            if (counter < MutableList.size - 1)
-                            {
+            // Only display note control buttons when menu is closed
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement =
+                Arrangement.SpaceEvenly // Space buttons evenly within the row
+            ) {
+                Button(
+                    onClick = {
+                        if (counter < mutableList.value.size - 1)
+                            if (counter < mutableList.value.size - 1) {
                                 counter++
-                                Log.d("size", "${MutableList.size}")
-                                Log.d("counter", "$counter")
-                                Log.d("array", "Notes in valArray: ${MutableList.joinToString(", ")}")
-
+                                currentNote.value = mutableList.value[counter]
+                                displayCorrectPitch(mutableList.value[counter])
                             }
-
-                                  },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(50),
-                        modifier = Modifier.size(160.dp, 56.dp)
-                    ) {
-                        Text(text = "Next note")
-                    }
-
-                    Button(
-                        onClick = {
-                            if (counter > 0) { // Ensure it does not drop below 0
-                                counter--
-                                Log.d("counter", "$counter")
-                                Log.d("array", "Notes in valArray: ${MutableList.joinToString(", ")}")
-
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(50),
-                        modifier = Modifier.size(160.dp, 56.dp)
-                    ) {
-                        Text(text = "Last note")
-                    }
+                    },
+                    colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(50),
+                    modifier = Modifier.size(160.dp, 56.dp)
+                ) {
+                    Text(text = "Last String")
                 }
+
+                Button(
+                    onClick = {
+                        if (counter > 0) {
+                            counter--
+                            currentNote.value = mutableList.value[counter]
+                            displayCorrectPitch(mutableList.value[counter])
+                        }
+                    },
+                    colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF6200EE).copy(alpha = 0.4f),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(50),
+                    modifier = Modifier.size(160.dp, 56.dp)
+                ) {
+                    Text(text = "Next String")
+                }
+
             }
-        }
-    }
-}
-fun calculatePitchAngle(currentPitch: Int, correctPitch: Int): Float {
-    // Log the input values
-    println("Input - currentPitch: $currentPitch, correctPitch: $correctPitch")
 
-    val result = when {
-        currentPitch == correctPitch -> {
-            90f // Perfect match
-        }
-        currentPitch < correctPitch -> {
-            val percentage = (currentPitch.toFloat() / correctPitch) // Calculate percentage as a fraction
-            println("percent: $percentage")
+            Box(
+                modifier =
+                Modifier.size(width = 200.dp, height = 40.dp) // Set the desired size
+                    .padding(bottom = 32.dp) // Adjust the padding as needed
+            ) {
+                // This box is empty but takes up space
 
-            90 * percentage // Scale to the range of 0 to 90
-        }
-        else -> {
-            val percentage = (currentPitch.toFloat() / correctPitch) // Calculate percentage as a fraction
-            println("percent: $percentage")
-            90 * percentage // Scale to the range of 0 to 90
-        }
-    }.coerceIn(0f, 180f) // Clamp the value between 0 and 90
-
-    // Log the output value
-    println("Output - calculated pitch angle: $result")
-
-    return result
-}
-
-
-
-
-@Composable
-fun TunerDial(
-    modifier: Modifier = Modifier,
-    currentPitchAngle: Float = 0f, // Angle for the current pitch (0 to 180)
-    targetPitchAngle: Float = 0f    // Angle for the correct pitch (0 to 180)
-) {
-    // Round angles to the nearest integer and ensure they're within the valid range [0, 180]
-    val roundedCurrentPitchAngle = currentPitchAngle.roundToInt().coerceIn(0, 180)
-    val roundedTargetPitchAngle = targetPitchAngle.roundToInt().coerceIn(0, 180)
-
-    Box(
-        modifier = modifier.size(400.dp), // Adjust the size
-        contentAlignment = Alignment.Center
-    ) {
-        // Drawing the half-circle dial with lines
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val arcThickness = 4.dp.toPx() // Thickness of the arc stroke
-            val centerX = size.width / 2
-            val centerY = size.height / 2 // Center is at the bottom middle of the half-circle
-
-            // Set the radius to ensure the half-circle matches the height of the vertical lines
-            val radius = size.width / 2 // Radius to match the width for a perfect half-circle
-
-            // Function to convert angle to radians
-            fun angleToRadians(angle: Int): Double {
-                // Map 0° to 180° angles to π (left) to 0 (right)
-                return Math.toRadians((180 - angle).toDouble())
             }
-            // Draw half-circle dial background
-            drawArc(
-                color = Color.Gray.copy(alpha = 0.3f),
-                startAngle = 180f,
-                sweepAngle = 180f,
-                useCenter = false,
-                style = Stroke(width = arcThickness),
-                size = Size(size.width, size.width) // Use width for a perfect half-circle
-            )
+            Text(
+                text = "© 2025 Oboukhov Entertainment LLC. All rights reserved.",
+                fontSize = 15.sp,
 
-            // Define colors for the lines
-            val currentLineColor = Color(0xFF6200EE) // Purple color for the current pitch line
-            val targetLineColor = Color.Red // Red color for the target pitch line
+                color = Color(0xFF808080),
 
-            // Draw the target pitch line (always vertical at center)
-            val targetX = centerX // Vertical line means X-coordinate is constant
-            val targetYStart = centerY - radius // Starting point of the line
-            val targetYEnd = centerY // Ending point of the line (center bottom)
-
-            drawLine(
-                color = targetLineColor,
-                strokeWidth = 4.dp.toPx(),
-                start = Offset(targetX, targetYStart), // Start from the top of the dial
-                end = Offset(targetX, targetYEnd) // End at the bottom center of the dial
-            )
-
-            // Calculate position for current pitch (clamping below horizontal line)
-            val clampedCurrentPitchAngle = roundedCurrentPitchAngle.coerceIn(0, 180)
-            val currentAngleRadians = angleToRadians(clampedCurrentPitchAngle)
-            val currentX = centerX + radius * cos(currentAngleRadians).toFloat()
-            val currentY = centerY - radius * sin(currentAngleRadians).toFloat()
-
-            // Draw the current pitch line (rotating line)
-            drawLine(
-                color = currentLineColor.copy(alpha = 0.8f), // Slightly more transparent
-                strokeWidth = 4.dp.toPx(),
-                start = Offset(centerX, centerY), // Bottom of the dial
-                end = Offset(currentX, currentY) // Current pitch position
             )
         }
     }
 }
-
 
 @Composable
 fun BackgroundVideo() {
     val context = LocalContext.current
-    val videoUri = Uri.parse("android.resource://${context.packageName}/raw/background_video") // Use the correct video file name
+    val videoUri =
+        Uri.parse(
+            "android.resource://${context.packageName}/raw/background_video"
+        ) // Use the correct video file name
 
     AndroidView(
         factory = { context ->
             val frameLayout = android.widget.FrameLayout(context)
-            val videoView = object : android.widget.VideoView(context) {
-                override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-                    val width = MeasureSpec.getSize(widthMeasureSpec)
-                    val height = MeasureSpec.getSize(heightMeasureSpec)
-                    setMeasuredDimension(width, height)
+            val videoView =
+                object : android.widget.VideoView(context) {
+                    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+                        val width = MeasureSpec.getSize(widthMeasureSpec)
+                        val height = MeasureSpec.getSize(heightMeasureSpec)
+                        setMeasuredDimension(width, height)
+                    }
                 }
-            }.apply {
-                setVideoURI(videoUri)
-                setOnPreparedListener { mediaPlayer ->
-                    mediaPlayer.isLooping = true // Loop the video
-                    start() // Start playback
-                }
-                layoutParams = android.widget.FrameLayout.LayoutParams(
-                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
-                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT
-                )
-            }
+                    .apply {
+                        setVideoURI(videoUri)
+                        setOnPreparedListener { mediaPlayer ->
+                            mediaPlayer.isLooping = true // Loop the video
+                            start() // Start playback
+                        }
+                        layoutParams =
+                            android.widget.FrameLayout.LayoutParams(
+                                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                                android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+                            )
+                    }
             frameLayout.addView(videoView)
             frameLayout
         },
@@ -990,18 +859,6 @@ fun BackgroundVideo() {
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    TuneralphaTheme {
-        HomeScreen(onModeSelected = {}, onTunerSelected = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
 fun ModeSelectionScreenPreview() {
-    TuneralphaTheme {
-        ModeSelectionScreen()
-    }
+    TuneralphaTheme { ModeSelectionScreen() }
 }
-
-
